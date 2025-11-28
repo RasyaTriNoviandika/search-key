@@ -125,7 +125,7 @@ const Index = () => {
                   Utility ({stats.utility})
                 </Button>
                 <Button
-                  variant={filterType === "customer" ? "default" : "outline"}
+                  variant={filterType === "customer" ? "secondary" : "outline"}
                   size="sm"
                   onClick={() => setFilterType("customer")}
                 >
@@ -225,7 +225,7 @@ const Index = () => {
                         </td>
                         <td className="px-4 py-3">
                           <Badge 
-                            variant={key.tipe === "utility" ? "secondary" : "default"}
+                            variant={key.tipe === "utility" ? "secondary" : "outline"}
                             className="text-xs"
                           >
                             {key.tipe === "utility" ? (
@@ -310,7 +310,7 @@ const Index = () => {
                             {key.no}
                           </Badge>
                           <Badge 
-                            variant={key.tipe === "utility" ? "secondary" : "default"}
+                            variant={key.tipe === "utility" ? "secondary" : "outline"}
                             className="text-xs"
                           >
                             {key.tipe === "utility" ? "Utility" : "Customer"}
