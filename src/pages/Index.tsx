@@ -10,27 +10,37 @@ import {
   LayoutGrid,
   List,
   Filter,
-  X
+  X,
+  Users,
+  Wrench
 } from "lucide-react";
 import { keysData } from "@/data/keysData";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+  const [filterType, setFilterType] = useState<"all" | "utility" | "customer">("all");
 
   const filteredKeys = useMemo(() => {
     return keysData.filter((key) => {
       const query = searchQuery.toLowerCase();
-      return (
+      const matchesSearch = 
         key.namaKunci.toLowerCase().includes(query) ||
         key.keterangan?.toLowerCase().includes(query) ||
-        key.no.toString().includes(query)
-      );
+        key.customer?.toLowerCase().includes(query) ||
+        key.lokasi?.toLowerCase().includes(query) ||
+        key.no.toString().includes(query);
+      
+      const matchesType = filterType === "all" || key.tipe === filterType;
+      
+      return matchesSearch && matchesType;
     });
-  }, [searchQuery]);
+  }, [searchQuery, filterType]);
 
   const stats = useMemo(() => ({
     total: keysData.length,
+    utility: keysData.filter(k => k.tipe === "utility").length,
+    customer: keysData.filter(k => k.tipe === "customer").length,
     filtered: filteredKeys.length
   }), [filteredKeys]);
 
@@ -54,15 +64,27 @@ const Index = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="mb-6 grid gap-4 sm:grid-cols-2">
+        <div className="mb-6 grid gap-4 sm:grid-cols-3">
           <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Kunci</p>
-                  <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+                  <p className="text-sm text-muted-foreground">Utility Keys</p>
+                  <p className="text-2xl font-bold text-foreground">{stats.utility}</p>
                 </div>
-                <Key className="h-8 w-8 text-primary/70" />
+                <Wrench className="h-8 w-8 text-primary/70" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Customer Keys</p>
+                  <p className="text-2xl font-bold text-foreground">{stats.customer}</p>
+                </div>
+                <Users className="h-8 w-8 text-primary/70" />
               </div>
             </CardContent>
           </Card>
@@ -83,48 +105,78 @@ const Index = () => {
         {/* Search & Filter Bar */}
         <Card className="mb-6 border-border/50 bg-card/50 backdrop-blur-sm">
           <CardContent className="p-4">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              {/* Search Input */}
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Cari nama kunci, lokasi, customer, atau nomor..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-10"
-                />
-                {searchQuery && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2"
-                    onClick={() => setSearchQuery("")}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
+            <div className="flex flex-col gap-4">
+              {/* Filter Buttons */}
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant={filterType === "all" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setFilterType("all")}
+                >
+                  <Key className="mr-2 h-4 w-4" />
+                  Semua ({stats.total})
+                </Button>
+                <Button
+                  variant={filterType === "utility" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setFilterType("utility")}
+                >
+                  <Wrench className="mr-2 h-4 w-4" />
+                  Utility ({stats.utility})
+                </Button>
+                <Button
+                  variant={filterType === "customer" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setFilterType("customer")}
+                >
+                  <Users className="mr-2 h-4 w-4" />
+                  Customer ({stats.customer})
+                </Button>
               </div>
 
-              {/* Filter & View Controls */}
-              <div className="flex items-center gap-2">
-                <div className="flex gap-1 rounded-lg border border-border p-1">
-                  <Button
-                    variant={viewMode === "table" ? "secondary" : "ghost"}
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => setViewMode("table")}
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={viewMode === "grid" ? "secondary" : "ghost"}
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => setViewMode("grid")}
-                  >
-                    <LayoutGrid className="h-4 w-4" />
-                  </Button>
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                {/* Search Input */}
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Cari nama kunci, lokasi, customer, atau nomor..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 pr-10"
+                  />
+                  {searchQuery && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2"
+                      onClick={() => setSearchQuery("")}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+
+                {/* View Controls */}
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1 rounded-lg border border-border p-1">
+                    <Button
+                      variant={viewMode === "table" ? "secondary" : "ghost"}
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => setViewMode("table")}
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={viewMode === "grid" ? "secondary" : "ghost"}
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => setViewMode("grid")}
+                    >
+                      <LayoutGrid className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -143,7 +195,16 @@ const Index = () => {
                       No
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-foreground md:text-sm">
+                      Tipe
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-foreground md:text-sm">
                       Nama Kunci
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-foreground md:text-sm">
+                      Customer
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-foreground md:text-sm">
+                      Lokasi
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-foreground md:text-sm">
                       Keterangan
@@ -163,9 +224,33 @@ const Index = () => {
                           </Badge>
                         </td>
                         <td className="px-4 py-3">
+                          <Badge 
+                            variant={key.tipe === "utility" ? "secondary" : "default"}
+                            className="text-xs"
+                          >
+                            {key.tipe === "utility" ? (
+                              <>
+                                <Wrench className="mr-1 h-3 w-3" />
+                                Utility
+                              </>
+                            ) : (
+                              <>
+                                <Users className="mr-1 h-3 w-3" />
+                                Customer
+                              </>
+                            )}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3">
                           <span className="text-sm font-medium text-foreground">
                             {key.namaKunci}
                           </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-muted-foreground">
+                          {key.customer || "-"}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-muted-foreground">
+                          {key.lokasi || "-"}
                         </td>
                         <td className="px-4 py-3 text-sm text-muted-foreground">
                           {key.keterangan || "-"}
@@ -175,7 +260,7 @@ const Index = () => {
                   ) : (
                     <tr>
                       <td
-                        colSpan={3}
+                        colSpan={6}
                         className="px-4 py-12 text-center"
                       >
                         <div className="flex flex-col items-center gap-2">
@@ -212,7 +297,11 @@ const Index = () => {
                   <CardContent className="p-5">
                     <div className="flex items-start gap-3">
                       <div className="rounded-lg bg-primary/10 p-2.5 text-primary">
-                        <Key className="h-5 w-5" />
+                        {key.tipe === "utility" ? (
+                          <Wrench className="h-5 w-5" />
+                        ) : (
+                          <Users className="h-5 w-5" />
+                        )}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="mb-2 flex items-center gap-2">
@@ -220,12 +309,31 @@ const Index = () => {
                             <Hash className="mr-1 h-3 w-3" />
                             {key.no}
                           </Badge>
+                          <Badge 
+                            variant={key.tipe === "utility" ? "secondary" : "default"}
+                            className="text-xs"
+                          >
+                            {key.tipe === "utility" ? "Utility" : "Customer"}
+                          </Badge>
                         </div>
                         <h3 className="mb-2 text-base font-semibold leading-tight text-foreground">
                           {key.namaKunci}
                         </h3>
                         
                         <div className="space-y-1.5 text-sm">
+                          {key.customer && (
+                            <div className="flex items-start gap-1">
+                              <Users className="mt-0.5 h-3 w-3 text-muted-foreground" />
+                              <span className="text-xs text-muted-foreground">
+                                {key.customer}
+                              </span>
+                            </div>
+                          )}
+                          {key.lokasi && (
+                            <div className="text-xs text-muted-foreground">
+                              📍 {key.lokasi}
+                            </div>
+                          )}
                           {key.keterangan && (
                             <div className="mt-2 border-t border-border/50 pt-2">
                               <p className="text-xs text-muted-foreground">
