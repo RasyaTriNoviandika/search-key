@@ -39,10 +39,10 @@ All colors MUST be HSL.
     --radius: 0.5rem;
 
     /* Custom colors for key types */
-    --utility: 217 91% 50%;
+    --utility: 0 88% 46%;
     --utility-foreground: 0 0% 100%;
-    --customer: 45 93% 47%;
-    --customer-foreground: 0 0% 0%;
+    --customer: 0 88% 56%;
+    --customer-foreground: 0 0% 100%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5% 26%;
@@ -84,10 +84,10 @@ All colors MUST be HSL.
     --ring: 0 88% 46%;
 
     /* Custom colors for key types */
-    --utility: 217 91% 60%;
+    --utility: 0 88% 46%;
     --utility-foreground: 0 0% 100%;
-    --customer: 45 93% 50%;
-    --customer-foreground: 0 0% 0%;
+    --customer: 0 88% 56%;
+    --customer-foreground: 0 0% 100%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 0 88% 46%;
     --sidebar-primary-foreground: 0 0% 100%;
