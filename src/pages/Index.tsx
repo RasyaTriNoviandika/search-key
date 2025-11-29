@@ -239,7 +239,7 @@ const Index = () => {
                   size="sm"
                   onClick={() => setFilterType("utility")}
                   className={filterType === "utility" 
-                    ? "bg-secondary text-secondary-foreground hover:bg-secondary/90" 
+                    ? "bg-utility text-utility-foreground shadow-[0_0_0_2px_hsl(var(--utility))]" 
                     : ""}
                 >
                   <Wrench className="mr-2 h-4 w-4" />
@@ -250,7 +250,7 @@ const Index = () => {
                   size="sm"
                   onClick={() => setFilterType("customer")}
                   className={filterType === "customer" 
-                    ? "bg-secondary text-secondary-foreground hover:bg-secondary/90" 
+                    ? "bg-customer text-customer-foreground shadow-[0_0_0_2px_hsl(var(--customer))]" 
                     : ""}
                 >
                   <Users className="mr-2 h-4 w-4" />
