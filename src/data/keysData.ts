@@ -312,4 +312,8 @@ export const keysData: KeyData[] = [
   { no: 388, namaKunci: "DRC Sharing Room", customer: "DRC Sharing Room", jumlah: 7, lokasi: "Lt.5 Tengah", keterangan: "Sharing Colocation", tipe: "customer" },
   { no: 389, namaKunci: "ITRUST", customer: "ITRUST", jumlah: 7, lokasi: "Lt.2 Timur", keterangan: "Sharing Colocation", tipe: "customer" },
   { no: 390, namaKunci: "DRS", customer: "DRS", jumlah: 2, lokasi: "Lt.2 Tengah", keterangan: "Kunci di pegang Team drc", tipe: "customer" },
+<<<<<<< HEAD
+=======
+  { no: 391, namaKunci: "DBS", customer: "DBS", jumlah: 2, lokasi: "Lt.3 Timur", keterangan: "Kunci di pegang Team drc", tipe: "customer" },
+>>>>>>> af74c8a (Progress)
 ];

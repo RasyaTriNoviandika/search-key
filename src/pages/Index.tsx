@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, memo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,14 +12,130 @@ import {
   Filter,
   X,
   Users,
+<<<<<<< HEAD
   Wrench
+=======
+  Wrench,
+  ChevronLeft,
+  ChevronRight
+>>>>>>> af74c8a (Progress)
 } from "lucide-react";
-import { keysData } from "@/data/keysData";
+import { keysData, KeyData } from "@/data/keysData";
+
+const ITEMS_PER_PAGE = 50;
+
+// Memoized table row component for performance
+const TableRow = memo(({ keyItem }: { keyItem: KeyData }) => (
+  <tr className="transition-colors hover:bg-muted/30">
+    <td className="px-4 py-3">
+      <Badge variant="outline" className="font-mono text-xs">
+        #{keyItem.no}
+      </Badge>
+    </td>
+    <td className="px-4 py-3">
+      <Badge 
+        variant={keyItem.tipe === "utility" ? "secondary" : "outline"}
+        className="text-xs"
+      >
+        {keyItem.tipe === "utility" ? (
+          <>
+            <Wrench className="mr-1 h-3 w-3" />
+            Utility
+          </>
+        ) : (
+          <>
+            <Users className="mr-1 h-3 w-3" />
+            Customer
+          </>
+        )}
+      </Badge>
+    </td>
+    <td className="px-4 py-3">
+      <span className="text-sm font-medium text-foreground">
+        {keyItem.namaKunci}
+      </span>
+    </td>
+    <td className="px-4 py-3 text-sm text-muted-foreground">
+      {keyItem.customer || "-"}
+    </td>
+    <td className="px-4 py-3 text-sm text-muted-foreground">
+      {keyItem.lokasi || "-"}
+    </td>
+    <td className="px-4 py-3 text-sm text-muted-foreground">
+      {keyItem.keterangan || "-"}
+    </td>
+  </tr>
+));
+
+TableRow.displayName = "TableRow";
+
+// Memoized grid card component for performance
+const GridCard = memo(({ keyItem }: { keyItem: KeyData }) => (
+  <Card className="border-border/50 bg-card transition-all hover:border-primary/20 hover:shadow-md">
+    <CardContent className="p-5">
+      <div className="flex items-start gap-3">
+        <div className="rounded-lg bg-primary/10 p-2.5 text-primary">
+          {keyItem.tipe === "utility" ? (
+            <Wrench className="h-5 w-5" />
+          ) : (
+            <Users className="h-5 w-5" />
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="mb-2 flex items-center gap-2">
+            <Badge variant="outline" className="font-mono text-xs">
+              <Hash className="mr-1 h-3 w-3" />
+              {keyItem.no}
+            </Badge>
+            <Badge 
+              variant={keyItem.tipe === "utility" ? "secondary" : "outline"}
+              className="text-xs"
+            >
+              {keyItem.tipe === "utility" ? "Utility" : "Customer"}
+            </Badge>
+          </div>
+          <h3 className="mb-2 text-base font-semibold leading-tight text-foreground">
+            {keyItem.namaKunci}
+          </h3>
+          
+          <div className="space-y-1.5 text-sm">
+            {keyItem.customer && (
+              <div className="flex items-start gap-1">
+                <Users className="mt-0.5 h-3 w-3 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">
+                  {keyItem.customer}
+                </span>
+              </div>
+            )}
+            {keyItem.lokasi && (
+              <div className="text-xs text-muted-foreground">
+                📍 {keyItem.lokasi}
+              </div>
+            )}
+            {keyItem.keterangan && (
+              <div className="mt-2 border-t border-border/50 pt-2">
+                <p className="text-xs text-muted-foreground">
+                  {keyItem.keterangan}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+));
+
+GridCard.displayName = "GridCard";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
   const [filterType, setFilterType] = useState<"all" | "utility" | "customer">("all");
+<<<<<<< HEAD
+=======
+  const [currentPage, setCurrentPage] = useState(1);
+>>>>>>> af74c8a (Progress)
 
   const filteredKeys = useMemo(() => {
     return keysData.filter((key) => {
@@ -36,6 +152,14 @@ const Index = () => {
       return matchesSearch && matchesType;
     });
   }, [searchQuery, filterType]);
+<<<<<<< HEAD
+=======
+
+  // Reset to page 1 when filters change
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filterType]);
+>>>>>>> af74c8a (Progress)
 
   const stats = useMemo(() => ({
     total: keysData.length,
@@ -44,12 +168,19 @@ const Index = () => {
     filtered: filteredKeys.length
   }), [filteredKeys]);
 
+  // Pagination
+  const totalPages = Math.ceil(filteredKeys.length / ITEMS_PER_PAGE);
+  const paginatedKeys = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredKeys.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredKeys, currentPage]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10">
         
         {/* Header */}
-        <div className="mb-8 text-center">
+        <header className="mb-8 text-center">
           <div className="mb-4 flex items-center justify-center gap-3">
             <div className="rounded-2xl bg-primary/10 p-3">
               <Key className="h-8 w-8 text-primary md:h-10 md:w-10" />
@@ -58,14 +189,20 @@ const Index = () => {
               Search Key
             </h1>
           </div>
-          <p className="text-sm text-muted-foreground md:text-base">
+          {/* <p className="text-sm text-muted-foreground md:text-base">
             Sistem Pencarian dan Pengelolaan Data Kunci
-          </p>
-        </div>
+          </p> */}
+        </header>
 
+<<<<<<< HEAD
         {/* Stats Cards */}
         <div className="mb-6 grid gap-4 sm:grid-cols-3">
           <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+=======
+        {/* Stats Cards - No backdrop-blur for better performance */}
+        <section className="mb-6 grid gap-4 sm:grid-cols-3">
+          <Card className="border-border/50 bg-card">
+>>>>>>> af74c8a (Progress)
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -73,6 +210,7 @@ const Index = () => {
                   <p className="text-2xl font-bold text-foreground">{stats.utility}</p>
                 </div>
                 <Wrench className="h-8 w-8 text-primary/70" />
+<<<<<<< HEAD
               </div>
             </CardContent>
           </Card>
@@ -85,11 +223,25 @@ const Index = () => {
                   <p className="text-2xl font-bold text-foreground">{stats.customer}</p>
                 </div>
                 <Users className="h-8 w-8 text-primary/70" />
+=======
+>>>>>>> af74c8a (Progress)
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+          <Card className="border-border/50 bg-card">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Customer Keys</p>
+                  <p className="text-2xl font-bold text-foreground">{stats.customer}</p>
+                </div>
+                <Users className="h-8 w-8 text-primary/70" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/50 bg-card">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -100,16 +252,20 @@ const Index = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </section>
 
         {/* Search & Filter Bar */}
-        <Card className="mb-6 border-border/50 bg-card/50 backdrop-blur-sm">
+        <Card className="mb-6 border-border/50 bg-card">
           <CardContent className="p-4">
             <div className="flex flex-col gap-4">
               {/* Filter Buttons */}
               <div className="flex flex-wrap gap-2">
                 <Button
+<<<<<<< HEAD
                   variant={filterType === "all" ? "default" : "outline"}
+=======
+                  variant={filterType === "all" ? "secondary" : "outline"}
+>>>>>>> af74c8a (Progress)
                   size="sm"
                   onClick={() => setFilterType("all")}
                 >
@@ -117,17 +273,35 @@ const Index = () => {
                   Semua ({stats.total})
                 </Button>
                 <Button
+<<<<<<< HEAD
                   variant={filterType === "utility" ? "default" : "outline"}
                   size="sm"
                   onClick={() => setFilterType("utility")}
+=======
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setFilterType("utility")}
+                  className={filterType === "utility" 
+                    ? "bg-utility text-utility-foreground hover:bg-utility/90 border-utility" 
+                    : "hover:bg-utility/10 hover:text-utility hover:border-utility"}
+>>>>>>> af74c8a (Progress)
                 >
                   <Wrench className="mr-2 h-4 w-4" />
                   Utility ({stats.utility})
                 </Button>
                 <Button
+<<<<<<< HEAD
                   variant={filterType === "customer" ? "secondary" : "outline"}
                   size="sm"
                   onClick={() => setFilterType("customer")}
+=======
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setFilterType("customer")}
+                  className={filterType === "customer" 
+                    ? "bg-customer text-customer-foreground hover:bg-customer/90 border-customer" 
+                    : "hover:bg-customer/10 hover:text-customer hover:border-customer"}
+>>>>>>> af74c8a (Progress)
                 >
                   <Users className="mr-2 h-4 w-4" />
                   Customer ({stats.customer})
@@ -184,6 +358,7 @@ const Index = () => {
         </Card>
 
         {/* Content */}
+<<<<<<< HEAD
         {viewMode === "table" ? (
           // Table View
           <Card className="overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm">
@@ -366,16 +541,131 @@ const Index = () => {
                     </Button>
                   )}
                 </div>
+=======
+        <main>
+          {viewMode === "table" ? (
+            // Table View
+            <Card className="overflow-hidden border-border/50 bg-card">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b border-border bg-muted/50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-foreground md:text-sm">
+                        No
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-foreground md:text-sm">
+                        Tipe
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-foreground md:text-sm">
+                        Nama Kunci
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-foreground md:text-sm">
+                        Customer
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-foreground md:text-sm">
+                        Lokasi
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-foreground md:text-sm">
+                        Keterangan
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {paginatedKeys.length > 0 ? (
+                      paginatedKeys.map((key) => (
+                        <TableRow key={key.no} keyItem={key} />
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={6} className="px-4 py-12 text-center">
+                          <div className="flex flex-col items-center gap-2">
+                            <Search className="h-12 w-12 text-muted-foreground/50" />
+                            <p className="text-muted-foreground">
+                              Tidak ada data kunci yang ditemukan
+                            </p>
+                            {searchQuery && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setSearchQuery("")}
+                              >
+                                Reset Pencarian
+                              </Button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+>>>>>>> af74c8a (Progress)
               </div>
-            )}
+            </Card>
+          ) : (
+            // Grid View
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {paginatedKeys.length > 0 ? (
+                paginatedKeys.map((key) => (
+                  <GridCard key={key.no} keyItem={key} />
+                ))
+              ) : (
+                <div className="col-span-full flex min-h-[400px] flex-col items-center justify-center gap-4">
+                  <Search className="h-16 w-16 text-muted-foreground/50" />
+                  <div className="text-center">
+                    <p className="mb-2 text-lg font-medium text-foreground">
+                      Tidak ada data kunci yang ditemukan
+                    </p>
+                    <p className="mb-4 text-sm text-muted-foreground">
+                      Coba ubah kata kunci pencarian atau filter Anda
+                    </p>
+                    {searchQuery && (
+                      <Button
+                        variant="outline"
+                        onClick={() => setSearchQuery("")}
+                      >
+                        Reset Pencarian
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </main>
+
+        {/* Pagination */}
+        {filteredKeys.length > ITEMS_PER_PAGE && (
+          <div className="mt-6 flex items-center justify-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Prev
+            </Button>
+            <span className="px-4 text-sm text-muted-foreground">
+              Halaman {currentPage} dari {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
         )}
 
         {/* Footer Info */}
         {filteredKeys.length > 0 && (
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            Menampilkan {filteredKeys.length} dari {keysData.length} kunci
-          </div>
+          <footer className="mt-6 text-center text-sm text-muted-foreground">
+            Menampilkan {paginatedKeys.length} dari {filteredKeys.length} kunci
+            {filteredKeys.length !== keysData.length && ` (Total: ${keysData.length})`}
+          </footer>
         )}
       </div>
     </div>
